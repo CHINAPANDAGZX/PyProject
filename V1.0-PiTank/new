@@ -1,0 +1,181 @@
+jsmpeg–MPEG1视频和MP2 JavaScript音频解码器
+
+jsmpeg是一个视频播放器用JavaScript写的。它由一个MPEG分离器，MPEG1视频和MP2音频解码器，WebGL和canvas2d渲染和webaudio声音输出。
+jsmpeg可以加载静态视频通过Ajax和允许低延迟流（~ 50ms）通过WebSockets。
+jsmpeg可以解码720P视频在iPhone 5S 30fps，在任何现代浏览器（Chrome，Firefox，Safari的作品，边缘）和是在只有20kb gzip压缩。
+使用它可以如此简单：
+
+    <script src="jsmpeg.min.js"></script>
+    <div class="jsmpeg" data-url="video.ts"></div>
+
+    一些更多的信息和演示：jsmpeg.com
+
+    使用一个jsmpeg视频播放器可以创建HTML使用CSS类jsmpeg的容器：
+
+    <div class="jsmpeg" data-url="<url>"></div>
+
+
+或通过直接调用构造函数jsmpeg player() JavaScript：
+
+    var player = new JSMpeg.Player(url [, options]);
+
+    注意使用HTML元素(internally JSMpeg.VideoElement)提供了一些功能上jsmpeg.player。即SVG暂停/播放按钮和能力“解锁”iOS设备上的音频。
+    URL参数接受一个URL到一个MPEG.TS文件或一个WebSocket服务器（WS：/ /…）。
+
+    选项参数支持下列属性：
+
+        canvas – HTML的canvas元素使用视频渲染。如果没有给出，渲染器将创建自己的canvas元素。
+        loop - 是否循环视频（只能是静态文件）。默认为true。
+        autoplay - 是否立即开始播放（只能是静态文件）。默认为false。
+        audio - 是否解码音频。默认为true。
+        video - 是否解码视频。默认为true。
+        poster（海报） - URL的图像使用作为海报显示视频播放之前。
+        pauseWhenHidden – 是否暂停播放当标签无效时。默认为true。注意浏览器通常会在不活跃的选项卡中使用JS。
+        disableGl - 是否禁用WebGL和总是使用canvas2d渲染。默认为false。
+        preserveDrawingBuffer（缓冲区保护） – 是否WebGL上下文创建缓冲区保护的必要“截图”通过canvas.toDataURL()。默认为false。
+        progressive（渐进） - 是否加载数据块（只能是静态文件）。启用时，播放可以开始之前，整个源已完全加载。默认为true。
+        throttled（节流）- 当使用渐进，是否推迟加载块当他们不需要播放吗。默认为true。
+        chunkSize（分片）- 使用渐进式时，块的大小以字节为单位同时负载。默认的1024×1024（1MB）。
+        decodeFirstFrame - 是否解码并显示视频的第一帧。有用设置画布大小和使用框架作为“海报”的形象。这已经在使用自动播放或流源没有影响。默认为true。
+        maxAudioLag – 流时，最大排队长度秒音频。
+        videoBufferSize – 流时，字节大小的视频解码缓冲区。默认的512×1024（512KB）。你可能需要增加这个非常高的比特率。
+        audioBufferSize – 流时，字节大小的音频解码缓冲区。默认的128×1024（128KB）。你可能需要增加这个非常高的比特率。
+
+
+除画布之外的所有选项也可以通过数据属性与HTML元素一起使用。如指定循环和自动播放的JavaScript：
+
+    var player = new JSMpeg.Player('video.ts' {loop: true, autoplay: true});
+
+或者使用HTML
+
+    <div class="jsmpeg" data-url="video.ts" data-loop="true" data-autoplay="true"></div>
+
+
+注意，camelcased选项必须联用作为数据属性。例如decodefirstframe：真正成为数据解码第一帧=“true”的HTML元素。
+
+JSMpeg.Player API
+
+一个 JSMpeg.Player 实例支持以下的方法和属性：
+
+    .play() – 开始播放
+    .pause() – 暂停播放
+    .stop() – 停止播放并回到视频的开始
+    .destroy() – 停止播放,切断源和清理WebGL和webaudio的状态，这个播放器在进行这个操作之后就不能使用了。
+    .volume – 获取或设置音频音量（0-1）
+    .currentTime – 获取或设置当前的播放的位置时间以秒为单位。
+
+
+编码jsmpeg为视频或音频
+
+jsmpeg只支持MPEG1视频编解码和MP2音频编解码器的播放MPEG-TS容器。视频解码器不正确处理B帧（虽然没有现代编码器似乎使用这些默认的反正）和视频的宽度必须是2的倍数。
+
+你可以使用FFMPEG编码这样一个合适的视频（这是在命令行执行ffmpeg编码，后面是它的参数）：
+
+    ffmpeg -i in.mp4 -f mpegts -codec:v mpeg1video -codec:a mp2 -b 0 out.ts
+
+您还可以控制视频的大小（S），帧速率（R），视频码率（B：V），音频比特率（B：一）、音频通道数（AC），采样率（AR）和更多。请参阅FFmpeg文档细节。
+
+综合实例：
+
+ffmpeg -i in.mp4 -f mpegts \
+    -codec:v mpeg1video -s 960x540 -b:v 1500k -r 30 -bf 0 \
+    -codec:a mp2 -ar 44100 -ac 1 -b:a 128k \
+    out.ts
+
+性能方面的考虑：
+
+jsmpeg甚至可以在iPhone 5S上处理30fps的720P视频，但是，MPEG1没有现代的编解码器的效率。MPEG1需要相当大的带宽的高清视频。720p开始看起来好一些了它可以达到 2Mbit/s(即250KB /s)。此外，比特率越高，JavaScript要解码的工作就越多。这不是静态文件的问题，或者如果你只是在利用你的本地WiFi视频流而且如果你不需要支持移动设备那么有10Mbit/s 1080p视频质量就好了（如果你的编码器可以跟上）。不管怎么样我建议你最多使用540p(960x540)即2Mbit/s。
+
+视频流通过WebSockets
+
+jsmpeg可以连接到WebSocket服务器发送二进制MPEG-TS数据流，JSMpeg试图保持尽可能低的延迟就立即对它所拥有的一切，忽略了视频和音频时间戳共。一切保持同步（延迟低），音频数据应交错视频帧之间非常频繁（- muxdelay ffmpeg中）。
+
+一个单独的缓冲视频流模式，jsmpeg预加载一个几秒钟的数据并给出了精确的定时和音频/视频同步都是可以想象的，但目前没有实现。视频和音频的内部缓冲区很小（分别为512kb和128KB的）和JSMpeg将抛弃旧的（甚至是老旧的）数据进行新到达的数据没有太多模糊的房间。这可能会引入解码工件时，有一个网络拥塞，但确保延迟保持在最低限度。如果有必要，你可以通过选择增加videobuffersize和audiobuffersize。
+
+JSMpeg有一个小小的WebSocket“继电器(relay)”，是使用Node.js写的。这个服务器接受一个MPEG-TS源通过HTTP和服务都通过WebSocket连接浏览器。传入的HTTP流可以使用FFmpeg，GStreamer或以其他方式。源和WebSocket 继电器之间必须要分离，因为ffmpeg不能通过WebSocket协议进行通信。然而，这种分离也允许你安装WebSocket继电器在公共服务器和共享您的流在互联网上（通常在你的路由器NAT阻止公共互联网连接到您的内网）。
+
+总之，它像这样工作：
+
+  run the websocket-relay.js
+  run ffmpeg, send output to the relay's HTTP port
+  connect JSMpeg in the browser to the relay's Websocket port
+
+示例设置为视频流：树莓派实时摄像头
+在这个例子中，ffmpeg和同一系统上的WebSocket接力跑。这允许您查看本地网络中的流，而不是在公共Internet上查看流。
+这个例子假设你的摄像头是兼容Video4Linux2表现为/ dev / video0在文件系统。大多数USB摄像头支持UVC标准应该是不错的。板载的覆盆子相机可作为V4L2设备加载内核模块：sudo modprobe bcm2835-v4l2。
+安装ffmpeg（见如何在Debian / Raspbian安装ffmpeg）。使用ffmpeg，我们可以捕捉摄像头视频和音频编码成MPEG1 / MP2。
+安装Node.js和NPM（见最新版本安装Debian和Ubuntu的Linux发行版Node.js）。WebSocket继电器是用Node.js
+安装HTTP服务器。我们将使用这个服务的静态文件（view-stream.html，jsmpeg。js），这样我们可以在我们的浏览器浏览视频网站。其他的服务器也可以（Nginx、Apache等）：sudo NPM G安装HTTP服务器
+
+安装Git并克隆这个库（或者只是下载它作为压缩和解包）
+sudo apt-get install命令
+
+git clone https://github.com/phoboslab/jsmpeg.git
+
+换成jsmpeg/ directory cd jsmpeg/
+Change into the jsmpeg/ directory cd jsmpeg/
+
+安装Node.js Websocket库：npm install ws
+
+开始WebSocket继电器。提供一个密码和一个进入的HTTP视频流和WebSocket接口，我们可以连接到浏览器中的端口：node websocket-relay.js supersecret 8081 8082
+在一个新的终端窗口（仍在jsmpeg/directory，启动HTTP服务器，所以我们可以为view-stream.html到浏览器：http-server
+
+在浏览器中打开流媒体网站。HTTP服务器会告诉你的IP（通常192.168.xxx）和端口（一般为8080），它的运行：HTTP://192.168.xxx：8080/view-stream.html
+三分之一终端窗口，启动ffmpeg捕捉摄像头视频并将它发送到WebSocket继电器。在目标URL中提供密码和端口（从步骤7）：
+
+ffmpeg \
+    -f v4l2 \
+        -framerate 25 -video_size 640x480 -i /dev/video0 \
+    -f mpegts \
+        -codec:v mpeg1video -s 640x480 -b:v 1000k -bf 0 \
+    http://localhost:8081/supersecret
+现在你应该可以在浏览器中看到一个实时的摄像头图像。
+如果ffmpeg无法打开输入视频，很可能你的摄像头不支持给定的分辨率，帧率格式或。获取兼容模式运行列表：
+
+   ffmpeg -f v4l2 -list_formats all -i /dev/video0
+
+要想添加视频音频，只需两个单独的输入，调用ffmpeg。
+ffmpeg \
+    -f v4l2 \
+        -framerate 25 -video_size 640x480 -i /dev/video0 \
+    -f alsa \
+        -ar 44100 -c 2 -i hw:0 \
+    -f mpegts \
+        -codec:v mpeg1video -s 640x480 -b:v 1000k -bf 0 \
+        -codec:a mp2 -b:a 128k \
+        -muxdelay 0.001 \
+    http://localhost:8081/supersecret
+
+注意muxdelay（混合延时）的理论。这应该减少滞后，但并不总是工作时，流视频和音频-见下面的备注。
+一些关于ffmpeg复用和延迟的话添加音频流的MPEG-TS有时会引入相当大的延迟。我特别觉得这是使用Linux ALSA和V4L2的问题（使用AVFoundation MacOS的工作还好吧）。然而，有一个简单的解决方法：只是并行运行的两个实例的ffmpeg。一个用于音频，一个用于视频。发送输出到同一个WebSocket继电器。由于MPEG格式简单，适当的“合成”两流自动发生在继电器。
+
+ffmpeg \
+    -f v4l2 \
+        -framerate 25 -video_size 640x480 -i /dev/video0 \
+    -f mpegts \
+        -codec:v mpeg1video -s 640x480 -b:v 1000k -bf 0 \
+        -muxdelay 0.001 \
+    http://localhost:8081/supersecret
+
+#第二终端
+
+ffmpeg \
+    -f alsa \
+        -ar 44100 -c 2 -i hw:0 \
+    -f mpegts \
+        -codec:a mp2 -b:a 128k \
+        -muxdelay 0.001 \
+    http://localhost:8081/supersecret
+
+在我的测试中，USB摄像头介绍~ 180ms有点卡顿。然而支持树莓派的摄像头模块，可以提供较低的延迟视频捕获。
+捕获摄像头输入在Windows或MacOS使用ffmpeg，看到ffmpeg捕获/摄像头维基。
+
+jsmpeg建筑构件
+
+这个库是建立在一个相当模块化的方式，同时保持最低限度的开销。实施新的分配器，译码器输出（渲染，音频设备）或源应不改变任何其他部分可能。然而，你仍然需要子类的jsmpeg。玩家在使用任何新的模块。看看一个jsmpeg.js源对模块的互连和什么他们应该提供API概述。我也写了一个关于JSMpeg的一些内部博客文章：Decode It Like It's 1999。
+
+使用库的部分，而不创建一个完整的播放器也应该相当简单。例如，您可以创建的jsmpeg.decoder.mpeg1video类，一个独立的实例。connect()渲染，。write()一些数据，decode()框架，不碰jsmpeg的其他部分。
+
+以前的版本
+The JSMpeg version currently living in this repo is a complete rewrite of the original jsmpeg library that was just able to decode raw mpeg1video. If you're looking for the old version, see the v0.2 tag.
+（jsmpeg当前活跃的版本,是老版本的重写，只是能够解码原mpeg1video原jsmpeg图书馆。如果你正在寻找旧版本，看到v0.2标签。）

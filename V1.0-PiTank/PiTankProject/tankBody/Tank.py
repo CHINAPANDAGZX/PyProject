@@ -10,7 +10,7 @@ import RPi.GPIO as GPIO
 # 引入拓展板库
 from ..HAT.Raspi_MotorHAT import Raspi_MotorHAT
 from ..HAT.Raspi_MotorHAT import Raspi_DCMotor
-from ..Raspi_PWM_Servo_Driver import PWM
+from ..HAT.Raspi_PWM_Servo_Driver import PWM
 
 
 
