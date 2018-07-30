@@ -26,6 +26,10 @@ $.post("/cmd",this.id,function(data,status){});
 </head>
 <body>
 <div id="container" class="container">
+     <video style="transform: rotate(0deg);" id="v1" controls="controls" onmouseover="this.play()" height="240" width="320">
+      <source src="rtsp://192.168.1.149:8554/">
+      html5 video
+    </video>
 <div>
 <button id="up" class="btn btn-lg btn-primary glyphicon glyphicon-circle-arrow-up"></button>
 </div>
