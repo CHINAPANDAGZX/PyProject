@@ -1,3 +1,7 @@
-#-*- utf:-8 -*-
-def main():
-    pass
+#!/usr/bin/python
+# -*- coding:utf-8 -*-
+
+from .tankBody import Tank
+
+
+Tank.testTankLight()
