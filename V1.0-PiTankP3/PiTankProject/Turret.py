@@ -2,10 +2,13 @@
 # -*- coding:utf-8 -*-
 
 from .HAT.Raspi_PWM_Servo_Driver import PWM
+
 ############################
-#用于控制坦克云台部分功能
+# 用于控制坦克云台部分功能
 ############################
 """用于控制坦克云台部分"""
+
+
 class Turret():
     # Initialise the PWM device using the default address
     # bmp = PWM(0x40, debug=True)
@@ -26,11 +29,11 @@ class Turret():
     def ServoUpdate(channel, pulse):
         self.pwm.setPWM(channel, 0, pulse)
 
-    #俯仰 0-180 对应220到630
-    def pitch(self,angle):
-        if(angle<=0):
+    # 俯仰 0-180 对应220到630
+    def pitch(self, angle):
+        if (angle <= 0):
             angle = 0
-        elif(angle>=180):
+        elif (angle >= 180):
             angle = 180
         else:
             angle = angle
@@ -41,11 +44,12 @@ class Turret():
         sendPulse = self.servoMin_pitch + round(angle * perAnglePulse)
         #  发送脉冲
         self.ServoUpdate(self.servoPitchNum, sendPulse)
-    #偏航
-    def yaw(self,angle):
-        if (angle <= 0):
+
+    # 偏航
+    def yaw(self, angle):
+        if angle <= 0:
             angle = 0
-        elif (angle >= 180):
+        elif angle >= 180:
             angle = 180
         else:
             angle = angle
@@ -55,7 +59,8 @@ class Turret():
         sendPulse = self.servoMin_yaw + round(angle * perAnglePulse)
         #  发送脉冲
         self.ServoUpdate(self.servoPitchNum, sendPulse)
-    #云台进入收藏状态
+
+    # 云台进入收藏状态
     def turret_off(self):
         self.pitch(0)
         self.yaw(90)
