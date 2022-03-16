@@ -85,7 +85,9 @@ if __name__ == '__main__':
     # com3 = Image.alpha_composite(im1, im4)
     # img = Image.open(background_path + "/" + random.choices(background_list)[0])
     com4.show()
-
+    # 保存图片
+    com4 = com4.convert('RGB')
+    com4.save('image_mask.jpg')
 
     # newImage = NewImage(random.choices(background_list),
     #                     random.choices(mouth_list),
