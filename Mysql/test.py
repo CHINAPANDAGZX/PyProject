@@ -5,6 +5,7 @@
 Python sqlalchemy 数据库操作例程
 参考网址：
 https://www.cnblogs.com/ybjourney/p/11832045.html
+https://blog.csdn.net/cynthrial/article/details/88725612
 """
 
 from sqlalchemy import create_engine, Column, Integer, String
