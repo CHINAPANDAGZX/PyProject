@@ -5,7 +5,7 @@ import xlrd
 import xlwt
 import uuid
 
-import entity
+from MEL.ExcelDataInput.entity import entity
 import replaceDeviceName
 
 
@@ -175,7 +175,7 @@ def write_data_to_excel(work_item_list):
     sheet1 = f.add_sheet(u'工作包', cell_overwrite_ok=True)
     sheet2 = f.add_sheet(u'关联设备名称', cell_overwrite_ok=True)
     # 标题信息行集合
-    rowTitle = [u'保养项目代码', u'保养项目名称', u'项目中文描述', u'项目英文描述', u'设备名称', u'设备ID', u'是否关键工作',u'备注']
+    rowTitle = [u'保养项目代码', u'保养项目名称', u'项目中文描述', u'项目英文描述', u'设备名称', u'设备ID', u'是否关键工作', u'备注']
     sheet2RowTitle = [u'设备ID', u'设备名称']
     work_item_device_list = []
     # 遍历向表格写入标题行信息

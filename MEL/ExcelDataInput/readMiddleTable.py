@@ -4,7 +4,7 @@
 import xlrd
 import genWorkPackageSql
 import transWorkItem
-import entity
+from MEL.ExcelDataInput.entity import entity
 
 
 def copy_work_package_by_middle_table(filename):
