@@ -113,7 +113,7 @@ def gen_sql(work_package_list):
     将保养工作包转换成新增sql语句写入文件
     """
     if len(work_package_list) > 0:
-        f = open("insert.sql", "w", encoding='utf-8')
+        f = open("paper1.sql", "w", encoding='utf-8')
         for wp in work_package_list:
             #  处理周期
             sql = "INSERT INTO `jw_work_package`" \

@@ -12,18 +12,26 @@ hw_paper_list = []  # 空列表
 
 
 def readData():
-    with codecs.open('./paper.csv', encoding='GBK') as f:
+    with codecs.open('paper6.csv', encoding='GBK') as f:
         # for row in csv.DictReader(f, skipinitialspace=True):
-        sqlFile = open("insert.sql", "w", encoding='utf-8')
+        sqlFile = open("paper6.sql", "w", encoding='utf-8')
         count = 0
         for paper in csv.reader(f):
-            id = str(uuid.uuid1())
+            id = str(uuid.uuid1()).replace('-', '')
             ship_id = "091"
             code = "PP" + ship_id + str(count).zfill(7)
             paper_code = ""
             name = paper[1]
             eng_name = ""
-            paper_type = ""
+            # 都是船舶证书
+            paper_property = "0"
+            # I国籍类证书（NationalityCert）    01
+            # II船级类证书(TradingCertificates)    02
+            # III保险类证书(InsuranceCert)    03
+            # IV安全管理和保安类证书(ISM and ISPSCert)    04
+            # V其它证书OtherCertificates 05
+            # VI 救生消防、通导检检证书 06
+            paper_type = "06"
             is_permanent = "1" if paper[4].replace(' ', '').lower() == "long" else "0"
             issue_date = "" if paper[3].replace(' ', '') == "" else paper[3].replace(' ', '').replace('.', '-')
             expiration_time = "" if paper[4].replace(' ', '').lower() == "long" else paper[4].replace(' ', '').replace('.', '-')
@@ -53,8 +61,7 @@ def readData():
             status = "0"
             super_role = ""
             last_check_time = ""
-            # 都是船舶证书
-            paper_property = "0"
+
             paper_class = ""
             ship = ""
             #  处理周期

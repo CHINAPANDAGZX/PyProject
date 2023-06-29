@@ -6,7 +6,7 @@ import re
 # RE_FILE_NAME_FORMAT = "(\d{2,3})-尚硅谷-Java语言高级-(.*)\.avi"
 
 
-pathList = ["C:\\Users\\admin\\Desktop\\体系开发相关\\ITG体系8.0版 PDF\\须知下 SMI II"]
+pathList = ["C:\\Users\\admin\\Desktop\\外部文件\\6-有效外来文件"]
 
 class BatchRename:
     def __init__(self):
